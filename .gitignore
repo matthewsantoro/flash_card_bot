@@ -1,0 +1,11 @@
+#Python
+__pychache__/
+*.py[cod]
+*.Python
+*.egg-info
+*.egg
+*.env
+venv/
+.venv/
+env/
+.env/
