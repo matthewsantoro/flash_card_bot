@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
 
 class Base(DeclarativeBase):
-    created: Mapped[DateTime] = mapped_column(DateTime, default=func.now)
-    updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now, onupdate=func.now())
+    created: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+    updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
     
 class Category(Base):
     __tablename__ = 'categories'  # Исправлено на __tablename__
