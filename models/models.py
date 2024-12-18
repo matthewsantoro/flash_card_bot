@@ -7,15 +7,14 @@ class Base(DeclarativeBase):
     updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
     
 class Category(Base):
-    __tablename__ = 'categories'  # Исправлено на __tablename__
-
+    __tablename__ = 'categories'  
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
 
     cards: Mapped[list["Card"]] = relationship("Card", back_populates="category")
 
 class Card(Base):
-    __tablename__ = 'cards'  # Исправлено на __tablename__
+    __tablename__ = 'cards'  
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     question: Mapped[str] = mapped_column(String(1000), nullable=False)
