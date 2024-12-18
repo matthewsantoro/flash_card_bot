@@ -1,8 +1,7 @@
 import logging
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from models.models import  Card, Category, Base
+from models.models import  Card, Category, Base, User, Set
 
 
 
@@ -48,4 +47,18 @@ class Database:
         await session.commit()
         return new_card
     
+    async def add_user(session: AsyncSession, user_id: int, name: str ) -> User:
+        new_user = User(name=name, id=user_id)
+        session.add(new_user)
+        await session.commit()
+        return new_user
+    
+    async def user_exists(session: AsyncSession, user_id: int): 
+        return session.query(User).filter(User.id == user_id).first() is not None
+    
+    async def add_set(session: AsyncSession, name: str, creator: User, private: bool = True ) -> Set:
+        new_set = Set(name=name, creator_id=creator, private=private)
+        session.add(new_set)
+        await session.commit()
+        return new_set
    

@@ -23,13 +23,13 @@ class Card(Base):
     set_id: Mapped[int] = mapped_column(ForeignKey('sets.id')) 
 
     category: Mapped["Category"] = relationship("Category", back_populates="cards")
-    set: Mapped["Set"] = relationship("Set", back_populates="cards")
+    set: Mapped["Set"] = relationship("Set", back_populates="card")
 
 class Set(Base):
     __tablename__ = 'sets' 
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(150), unique=False, nullable=False)
     private: Mapped[bool] = mapped_column(BOOLEAN, default=True)
     creator_id: Mapped[int] = mapped_column(ForeignKey('users.id')) 
 
