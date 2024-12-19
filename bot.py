@@ -11,62 +11,24 @@ from aiogram.filters import CommandStart,Command
 from aiogram.types import Message
 from handlers import start
 
+from .config import DB_CONFIG, BOT_TOKEN
+
 
 from database.db import Database
 
 load_dotenv()
-TOKEN = getenv("BOT_TOKEN")
-
-# Инициализация базы данных
-db_config = {
-    'USER': getenv('DB_USER'),
-    'PASSWORD': getenv('DB_PASSWORD'),
-    'HOST': getenv('DB_HOST'),
-    'PORT': getenv('DB_PORT'),
-    'DATABASE': getenv('DB_DATABASE')
-}
 
 
 
 dp = Dispatcher()
-
-
-async def on_startup(db):
-    await db.connect()
-    await db.setup()
-    logging.info("Бот запущен и подключен к базе данных.")
-
-async def on_shutdown(dp):
-    await db.close()
-    logging.info("Бот остановлен и соединение с базой данных закрыто.")
-
-
-
-db = Database(db_config)
-
-
-
-
-
-
-@dp.message(Command("add"))
-async def add_category_handler(message: Message, command):
-    category_name = command.args # Получаем аргументы команды
-    if category_name:
-        async for session in  db.get_session():
-            await db.add_category(session, category_name)
-            await message.reply(f"Категория '{category_name}' добавлена.")
-    else:
-        await message.reply("Пожалуйста, укажите название категории после команды.")
-
-
+db = Database(DB_CONFIG)
 
 async def main() -> None:
     # Initialize Bot instance with default bot properties which will be passed to all API calls
     
-    bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp.include_routers(start.router)
-    await on_startup(db)
+    await db.on_startup()
     await dp.start_polling(bot)
 
 
