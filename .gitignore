@@ -9,3 +9,4 @@ venv/
 .venv/
 env/
 .env/
+.vscode/settings.json
