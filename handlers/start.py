@@ -10,7 +10,7 @@ router = Router()  # [1]
 async def cmd_start(message: Message):
     user_id = message.from_user.id
     username = message.from_user.username or "Неизвестный"
-    if not await db.user_exists(user_id):
+    if not await db.get_user_by_id(user_id=user_id):
         await db.add_user(user_id=user_id, name=username)
         user = await db.get_user_by_id(user_id=user_id)
         await db.add_set(name='Основной набор', creator_id=user.id)

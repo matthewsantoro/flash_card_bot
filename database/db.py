@@ -57,10 +57,6 @@ class Database:
             return result.scalars().first()
     
 
-    async def user_exists(self, user_id: int): 
-        async with self.Session() as session:
-            result = await session.execute(select(User).where(User.id == user_id))
-            return result.scalars().first() is not None
     
     async def add_set(self, name: str, creator_id: int, private: bool = True ) -> Set:
         async with self.Session() as session:
