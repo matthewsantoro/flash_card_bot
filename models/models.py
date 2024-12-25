@@ -6,12 +6,12 @@ class Base(DeclarativeBase):
     created: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
     
-class Category(Base):
-    __tablename__ = 'categories'  
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
+# class Category(Base):
+#     __tablename__ = 'categories'  
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+#     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
 
-    cards: Mapped[list["Card"]] = relationship("Card", back_populates="category")
+#     cards: Mapped[list["Card"]] = relationship("Card", back_populates="category")
 
 class Card(Base):
     __tablename__ = 'cards'  
@@ -19,10 +19,10 @@ class Card(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     question: Mapped[str] = mapped_column(String(1000), nullable=False)
     answer: Mapped[str] = mapped_column(String(1000), nullable=False)
-    category_id: Mapped[int] = mapped_column(ForeignKey('categories.id')) 
+    #category_id: Mapped[int] = mapped_column(ForeignKey('categories.id')) 
     set_id: Mapped[int] = mapped_column(ForeignKey('sets.id')) 
 
-    category: Mapped["Category"] = relationship("Category", back_populates="cards")
+    # category: Mapped["Category"] = relationship("Category", back_populates="cards")
     set: Mapped["Set"] = relationship("Set", back_populates="card")
 
 class Set(Base):
