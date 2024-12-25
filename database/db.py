@@ -3,7 +3,7 @@ from os import getenv
 from sqlalchemy import select
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from models.models import  Card, Category, Base, User, Set
+from models.models import  Card,  Base, User, Set
 
 
 class Database:
@@ -30,20 +30,14 @@ class Database:
             await conn.run_sync(Base.metadata.create_all)
             logging.info("Таблицы успешно созданы или уже существуют.")
 
-    
-    async def add_category(self, name: str):
-        async with self.Session() as session:
-            new_category = Category(name=name)
-            session.add(new_category)
-            await session.commit()
-        return new_category
 
-    async def add_card(self, question: str, answer: str, category_id: int):
+    async def add_card(self, question: str, answer: str, set_id: int):
         async with self.Session() as session:
-            new_card = Card(question=question, answer=answer, category_id=category_id)
+            new_card = Card(question=question, answer=answer, set_id=set_id)
             session.add(new_card)
             await session.commit()
-        return new_card
+            await session.refresh(new_card)
+            return new_card
     
     async def add_user(self, user_id: int, name: str ) -> User:
         async with self.Session() as session:
@@ -68,4 +62,6 @@ class Database:
             await session.commit()
             await session.refresh(new_set)
             return new_set
+        
+
    
