@@ -56,12 +56,16 @@ class Database:
             result = await session.execute(select(User).where(User.id == user_id))
             return result.scalars().first()
     
-
+    async def get_sets_by_user_id(self, user_id: int) -> list[Set]:
+        async with self.Session() as session:
+            result = await session.execute(select(Set).where(Set.creator_id == user_id))
+            return result.scalars().all()
     
     async def add_set(self, name: str, creator_id: int, private: bool = True ) -> Set:
         async with self.Session() as session:
             new_set = Set(name=name, creator_id=creator_id, private=private)
             session.add(new_set)
             await session.commit()
-        return new_set
+            await session.refresh(new_set)
+            return new_set
    
