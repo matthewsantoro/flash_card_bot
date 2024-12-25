@@ -12,4 +12,5 @@ async def create_sets_keyboard(sets) -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(
         text=f"Добавить набор",
         callback_data="set_0"))
+    builder.adjust(1) 
     return builder.as_markup()
