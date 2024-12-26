@@ -21,7 +21,7 @@ class Card(Base):
     answer: Mapped[str] = mapped_column(String(1000), nullable=False)
     #category_id: Mapped[int] = mapped_column(ForeignKey('categories.id')) 
     set_id: Mapped[int] = mapped_column(ForeignKey('sets.id')) 
-
+    number: Mapped[int] = mapped_column(Integer, nullable=True)
     # category: Mapped["Category"] = relationship("Category", back_populates="cards")
     set: Mapped["Set"] = relationship("Set", back_populates="card")
 
