@@ -1,6 +1,6 @@
 import logging
 from os import getenv
-from sqlalchemy import select
+from sqlalchemy import func, select
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from models.models import  Card,  Base, User, Set
@@ -33,7 +33,10 @@ class Database:
 
     async def add_card(self, question: str, answer: str, set_id: int):
         async with self.Session() as session:
-            new_card = Card(question=question, answer=answer, set_id=set_id)
+            result = await session.execute(select(func.count()).select_from(Card).where(Card.set_id ==set_id))
+            count = result.scalar()
+            
+            new_card = Card(question=question, answer=answer, set_id=set_id, number=count+1)
             session.add(new_card)
             await session.commit()
             await session.refresh(new_card)
