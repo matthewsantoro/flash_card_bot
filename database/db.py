@@ -31,16 +31,21 @@ class Database:
             logging.info("Таблицы успешно созданы или уже существуют.")
 
 
-    async def add_card(self, question: str, answer: str, set_id: int):
+    async def add_card(self, question: str, answer: str, set_id: int, number:int):
         async with self.Session() as session:
-            result = await session.execute(select(func.count()).select_from(Card).where(Card.set_id ==set_id))
-            count = result.scalar()
             
-            new_card = Card(question=question, answer=answer, set_id=set_id, number=count+1)
+            
+            new_card = Card(question=question, answer=answer, set_id=set_id, number=number)
             session.add(new_card)
             await session.commit()
             await session.refresh(new_card)
             return new_card
+        
+    async def get_last_card_number_in_set(self, set_id:int):
+        async with self.Session() as session:
+            result = await session.execute(select(func.count()).select_from(Card).where(Card.set_id ==set_id))
+            return result.scalar()
+        
     
     async def add_user(self, user_id: int, name: str ) -> User:
         async with self.Session() as session:
