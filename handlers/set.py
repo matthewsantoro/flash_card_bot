@@ -1,25 +1,18 @@
-from aiogram import F, Router
-from aiogram.types import Message
-from aiogram.filters import Command
+from aiogram import Bot, Router, F
 from aiogram.types import Message, CallbackQuery
-from aiogram.fsm.context import FSMContext
 from database.db import Database
-from keyboards.sets import create_sets_keyboard
+from handlers import main_menu
 from states.add_card_state import AddCard
-from utils.text import MAIN_MENU_TEXT
-from keyboards.menu import create_main_menu
-
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
+from keyboards.sets import create_sets_keyboard
+from aiogram.fsm.context import FSMContext
 router = Router()
+
 db = Database()
 
 
-@router.message(Command("menu"))  # [2]
-async def main_menu(message: Message):
-    keyboard = await create_main_menu()
-    await message.answer(text=MAIN_MENU_TEXT, reply_markup=keyboard)
-
-
-@router.callback_query(F.data == "menu_set")
+@router.callback_query(F.data =="menu_set")
 async def get_sets_card(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     sets = await db.get_sets_by_user_id(user_id)
@@ -32,7 +25,7 @@ async def get_sets_card(callback: CallbackQuery, state: FSMContext):
     await state.set_state(AddCard.choose_set)
 
 
-@router.callback_query(F.data == "menu_addcard")
+@router.callback_query(F.data =="menu_addcard")
 async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     sets = await db.get_sets_by_user_id(user_id)

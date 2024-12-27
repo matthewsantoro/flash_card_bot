@@ -15,17 +15,7 @@ router = Router()
 db = Database()
 
 
-@router.callback_query(F.data.startswith("menu_addcard"))
-async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
-    user_id = callback.from_user.id
-    sets = await db.get_sets_by_user_id(user_id)
-    await state.update_data(msg_id=callback.message.message_id)
-    keyboard = await create_sets_keyboard(sets=sets)
-    await callback.message.edit_text(
-        text="Выберите коллекцию в которую вы хотите добавить карточку:",
-        reply_markup=keyboard,
-    )
-    await state.set_state(AddCard.choose_set)
+
 
 
 @router.callback_query(F.data.startswith("set_"), StateFilter(AddCard.choose_set))
@@ -43,7 +33,7 @@ async def choosing_set(callback: CallbackQuery, state: FSMContext):
         await state.update_data(number=number)
         await state.update_data(set_id=set_id)
         await callback.message.edit_text(
-            text=f"<b>Карточка #{number}</b>\nНапишите Front карточки",
+            text=f"<b>📝Карточка #{number}</b>\nНапишите Front карточки",
             reply_markup=None,
         )
         await state.set_state(AddCard.enter_question)
@@ -55,15 +45,15 @@ async def add_set(message: Message, state: FSMContext, bot: Bot):
     new_set = await db.add_set(creator_id=user_id, name=message.text)
     data = await state.get_data()
 
-    await message.reply(f"Коллекция '{new_set.name}' добавлена.")
     await state.update_data(set_id=new_set.id)
     await state.set_state(AddCard.enter_question)
 
     await bot.edit_message_text(
-        text=f"Коллекция '{new_set.name}' добавлена.\n<b>Карточка #{data['number']}</b>\n Напишите Front карточки",
+        text=f"Коллекция '{new_set.name}' добавлена.\n<b>📝Карточка #{data['number']}</b>\n Напишите Front карточки",
         chat_id=message.chat.id,
         message_id=data["msg_id"],
     )
+    await message.delete()
 
 
 @router.message(StateFilter(AddCard.enter_question))
@@ -72,7 +62,7 @@ async def entering_question(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     await message.delete()
     await bot.edit_message_text(
-        text=f"<b>Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{message.text}\n\nНапишите BACK карточки",
+        text=f"<b>📝Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{message.text}\n\nНапишите BACK карточки",
         chat_id=message.chat.id,
         message_id=data["msg_id"],
     )
@@ -92,7 +82,7 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
     )
     keyboard = await finish_card()
     await bot.edit_message_text(
-        f"<b>Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{card.question}\n<b>👇BACK </b>:{card.answer}",
+        f"<b>📝Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{card.question}\n<b>👇BACK </b>:{card.answer}",
         chat_id=message.chat.id,
         message_id=data["msg_id"],
         reply_markup=keyboard,
@@ -105,12 +95,12 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
 async def finish(callback: CallbackQuery, state: FSMContext):
     option = callback.data.split("_")[1]
     data = await state.get_data()
-    number = data['number'] + 1
+    number = data["number"] + 1
     await state.update_data(number=number)
     if option == "new":
         await state.set_state(AddCard.enter_question)
         await callback.message.edit_text(
-            text=f"<b>Карточка #{number}</b>\nНапишите Front карточки",
+            text=f"<b>📝Карточка #{number}</b>\nНапишите Front карточки",
             reply_markup=None,
         )
     if option == "finish":

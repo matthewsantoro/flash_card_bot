@@ -22,8 +22,6 @@ async def main() -> None:
     dp.include_routers(start.router)
     dp.include_routers(main_menu.router)
     dp.include_routers(add_card.router)
-    
-    
     await dp.start_polling(bot)
 
 
