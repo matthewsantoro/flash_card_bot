@@ -61,6 +61,11 @@ class Database:
     async def get_sets_by_user_id(self, user_id: int) -> list[Set]:
         async with self.Session() as session:
             result = await session.execute(select(Set).where(Set.creator_id == user_id))
+            return result.scalars().first()
+        
+    async def get_set_by_id(self, set_id: int) -> list[Set]:
+        async with self.Session() as session:
+            result = await session.execute(select(Set).where(Set.id == set_id))
             return result.scalars().all()
     
     async def add_set(self, name: str, creator_id: int, private: bool = True ) -> Set:

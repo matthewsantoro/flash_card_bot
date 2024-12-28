@@ -6,3 +6,4 @@ class AddCard(StatesGroup):
     enter_question = State()
     enter_answer = State()
     finish = State()
+    

@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from database.db import Database
 from keyboards.sets import create_sets_keyboard
 from states.add_card_state import AddCard
+from states.set_state import SetState
 from utils.text import MAIN_MENU_TEXT
 from keyboards.menu import create_main_menu
 
@@ -29,7 +30,7 @@ async def get_sets_card(callback: CallbackQuery, state: FSMContext):
         text="Выберите коллекцию:",
         reply_markup=keyboard,
     )
-    await state.set_state(AddCard.choose_set)
+    await state.set_state(SetState.choose_set)
 
 
 @router.callback_query(F.data == "menu_addcard")

@@ -14,3 +14,9 @@ async def create_sets_keyboard(sets) -> InlineKeyboardMarkup:
         callback_data="set_0"))
     builder.adjust(1) 
     return builder.as_markup()
+
+async def create_set_menu() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.add(InlineKeyboardButton(text='Карточки', callback_data='view_cards'))
+    builder.add(InlineKeyboardButton(text='Редактировать', callback_data='edit_set'))
+    builder.add(InlineKeyboardButton(text='Удалить', callback_data='delete_set'))
