@@ -20,3 +20,13 @@ async def create_set_menu() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text='Карточки', callback_data='view_cards'))
     builder.add(InlineKeyboardButton(text='Редактировать', callback_data='edit_set'))
     builder.add(InlineKeyboardButton(text='Удалить', callback_data='delete_set'))
+
+async def create_card_keyboard(index: int, total: int):
+    builder = InlineKeyboardBuilder()
+    if index > 1:
+        builder.button(text="⬅️", callback_data=f"carousel:{index-1}")
+    if index < total - 1:
+        builder.button(text="➡️", callback_data=f"carousel:{index+1}")
+    builder.button(text="✏️ Редактировать", callback_data=f"cardedit_{index}")
+    builder.button(text="🗑️ Удалить", callback_data=f"carddelete_{index}")
+    return builder.as_markup()
