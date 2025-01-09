@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from database.db import Database
 from keyboards.sets import create_sets_keyboard
-from states.add_card_state import AddCard
+from states.cards import CardState
 from states.set_state import SetState
 from utils.text import MAIN_MENU_TEXT
 from keyboards.menu import create_main_menu
@@ -33,7 +33,7 @@ async def get_sets_card(callback: CallbackQuery, state: FSMContext):
     await state.set_state(SetState.choose_set)
 
 
-@router.callback_query(F.data == "menu_addcard")
+@router.callback_query(F.data == "menu_cards")
 async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
     user_id = callback.from_user.id
     sets = await db.get_sets_by_user_id(user_id)
@@ -43,4 +43,17 @@ async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
         text="Выберите коллекцию в которую вы хотите добавить карточку:",
         reply_markup=keyboard,
     )
-    await state.set_state(AddCard.choose_set)
+    await state.set_state(CardState.choose_set)
+
+
+# @router.callback_query(F.data == "menu_cards")
+# async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
+#     user_id = callback.from_user.id
+#     sets = await db.get_sets_by_user_id(user_id)
+#     await state.update_data(msg_id=callback.message.message_id)
+#     keyboard = await create_sets_keyboard(sets=sets)
+#     await callback.message.edit_text(
+#         text="Выберите коллекцию в которую вы хотите добавить карточку:",
+#         reply_markup=keyboard,
+#     )
+#     await state.set_state(AddCard.choose_set)

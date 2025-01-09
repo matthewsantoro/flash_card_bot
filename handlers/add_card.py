@@ -73,7 +73,6 @@ async def entering_question(message: Message, state: FSMContext, bot: Bot):
 async def entering_answer(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(a=message.text)
     data = await state.get_data()
-    db = Database()
     card = await db.add_card(
         answer=data["a"],
         question=data["q"],
