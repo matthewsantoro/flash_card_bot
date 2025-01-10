@@ -8,8 +8,8 @@ async def create_main_menu() -> InlineKeyboardMarkup:
         text=f"🗂️Наборы карточек",
         callback_data="menu_set"))
     builder.add(InlineKeyboardButton(
-        text=f"📝Добавить карточку",
-        callback_data="menu_addcard"))
+        text=f"📝Карточки",
+        callback_data="menu_cards"))
     builder.add(InlineKeyboardButton(
         text=f"⚙️Найстроки",
         callback_data="menu_setting"))
