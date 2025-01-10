@@ -46,14 +46,3 @@ async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
     await state.set_state(CardState.choose_set)
 
 
-# @router.callback_query(F.data == "menu_cards")
-# async def cmd_add_card(callback: CallbackQuery, state: FSMContext):
-#     user_id = callback.from_user.id
-#     sets = await db.get_sets_by_user_id(user_id)
-#     await state.update_data(msg_id=callback.message.message_id)
-#     keyboard = await create_sets_keyboard(sets=sets)
-#     await callback.message.edit_text(
-#         text="Выберите коллекцию в которую вы хотите добавить карточку:",
-#         reply_markup=keyboard,
-#     )
-#     await state.set_state(AddCard.choose_set)
