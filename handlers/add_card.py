@@ -55,9 +55,7 @@ async def add_set(message: Message, state: FSMContext, bot: Bot):
     )
     await message.delete()
 
-
-@router.message(StateFilter(AddCard.enter_question))
-async def entering_question(message: Message, state: FSMContext, bot: Bot):
+async def add_question(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(q=message.text)
     data = await state.get_data()
     await message.delete()
@@ -66,7 +64,13 @@ async def entering_question(message: Message, state: FSMContext, bot: Bot):
         chat_id=message.chat.id,
         message_id=data["msg_id"],
     )
+
+@router.message(StateFilter(AddCard.enter_question))
+async def entering_question(message: Message, state: FSMContext, bot: Bot):
+    await add_question(message = message, state=state, bot=bot)
     await state.set_state(AddCard.enter_answer)
+
+
 
 
 @router.message(StateFilter(AddCard.enter_answer))
