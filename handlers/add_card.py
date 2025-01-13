@@ -16,12 +16,12 @@ router = Router()
 db = Database()
 
 
-
 @router.message(StateFilter(CardState.enter_question))
 async def entering_question(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(q=message.text)
     data = await state.get_data()
     await message.delete()
+
     await bot.edit_message_text(
         text=f"<b>📝Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{message.text}\n\nНапишите BACK карточки",
         chat_id=message.chat.id,
@@ -40,7 +40,12 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
         set_id=data["set_id"],
         number=data["number"],
     )
-    cards = data['cards'].append(card)
+    cards = data.get('cards')
+    if cards is None:
+        cards = []
+    cards.append(card)
+    
+    
     await state.update_data(cards=cards)
     keyboard = await finish_card()
     await bot.edit_message_text(
@@ -68,6 +73,4 @@ async def finish(callback: CallbackQuery, state: FSMContext):
     if option == "finish":
         await state.set_state(CardState.view_card)
         cards = data["cards"]
-        await show_card(msg=callback.message, index=len(cards), cards=cards )
-        
-    
+        await show_card(msg=callback.message, index=len(cards) - 1, cards=cards)
