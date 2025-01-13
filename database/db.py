@@ -1,6 +1,6 @@
 import logging
 from os import getenv
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select, text
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from models.models import Card, Base, User, Set
@@ -26,6 +26,47 @@ class Database:
         """Создает необходимые таблицы в базе данных, если они не существуют."""
         async with self.async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            await conn.execute(
+                text(
+                    """
+            CREATE OR REPLACE FUNCTION update_card_numbers()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                -- Обновляем номера карточек для всех записей с тем же set_id
+                UPDATE cards
+                SET number = new_numbers.new_number
+                FROM (
+                    SELECT id, ROW_NUMBER() OVER (PARTITION BY set_id ORDER BY id) AS new_number
+                    FROM cards
+                    WHERE set_id = OLD.set_id
+                ) AS new_numbers
+                WHERE cards.id = new_numbers.id;
+
+                RETURN OLD;
+            END;
+            $$ LANGUAGE plpgsql;
+        """
+                )
+            )
+
+            await conn.execute(
+                text(
+                    """
+                DROP TRIGGER IF EXISTS update_card_numbers_trigger ON cards;
+                """
+                )
+            )
+
+            await conn.execute(
+                text(
+                    """
+                CREATE TRIGGER update_card_numbers_trigger
+                AFTER DELETE ON cards
+                FOR EACH ROW
+                EXECUTE FUNCTION update_card_numbers();
+        """
+                )
+            )
             logging.info("Таблицы успешно созданы или уже существуют.")
 
     # CARDS
@@ -47,8 +88,13 @@ class Database:
             )
             return result.scalar()
 
+    async def delete_card(self, card_id: int):
+        async with self.Session() as session:
+            await session.execute(delete(Card).where(Card.id == card_id))
+            await session.commit()
+
     async def get_cards_by_set_id(self, set_id: int):
-          async with self.Session() as session:
+        async with self.Session() as session:
             result = await session.execute(select(Card).where(Card.set_id == set_id))
             return result.scalars().all()
 
