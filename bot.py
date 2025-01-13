@@ -14,12 +14,15 @@ from database.db import Database
 
 load_dotenv()
 
+
 async def main() -> None:
     dp = Dispatcher()
     db = Database()
     await db.setup()
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    dp.include_routers(start.router,main_menu.router,add_card.router,set.router, cards.router)
+    dp.include_routers(
+        start.router, main_menu.router, add_card.router, set.router, cards.router
+    )
     await dp.start_polling(bot)
 
 
