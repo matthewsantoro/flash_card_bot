@@ -1,7 +1,6 @@
 from aiogram import Bot, Router, F
 from aiogram.types import Message, CallbackQuery
 from database.db import Database
-from handlers.add_card import add_question
 from keyboards.menu import create_main_menu
 from models.models import Card
 from states.cards import CardState
@@ -27,13 +26,13 @@ async def checking_chosen_set(callback: CallbackQuery, state: FSMContext):
         await state.set_state(CardState.add_set)
         await state.update_data(number=1)
     else:
-        number = await db.get_last_card_number_in_set(set_id=set_id) + 1
-        await state.update_data(number=number)
         await state.update_data(set_id=set_id)
         cards = await db.get_cards_by_set_id(set_id)
         await state.update_data(cards=cards)
         await show_card(callback.message, 0, cards)
         await state.set_state(CardState.view_card)  
+
+
 
 # @router.callback_query(F.data.startswith("set_"), StateFilter(CardState.choose_set))
 # async def choosing_set(callback: CallbackQuery, state: FSMContext):
@@ -73,6 +72,14 @@ async def back_to_menu(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text=MAIN_MENU_TEXT, reply_markup=keyboard)
 
 @router.callback_query(F.data == 'card_add', StateFilter(CardState.view_card))
-async def add_card(callback: CallbackQuery, state: FSMContext, bot: Bot):
-    await add_question(message=callback.message, state=state, bot=bot)
+async def add_card(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    number = await db.get_last_card_number_in_set(set_id=data['set_id']) + 1
+    await state.update_data(number=number)
+    await callback.message.edit_text(
+            text=f"<b>📝Карточка #{number}</b>\nНапишите Front карточки",
+            reply_markup=None,
+        )
+    await state.set_state(CardState.enter_question)
+
     
