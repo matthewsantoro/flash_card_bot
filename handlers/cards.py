@@ -1,11 +1,11 @@
 from typing import Optional
-from aiogram import Bot, Router, F
+from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from database.db import Database
 from keyboards.menu import create_main_menu
 from models.models import Card
 from states.cards import CardState
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from keyboards.cards import create_card_keyboard, create_empty_card_keyboard
 from aiogram.fsm.context import FSMContext
@@ -50,12 +50,9 @@ async def show_card(msg: Message, index: Optional[int], cards: Optional[list[Car
         )
 
 
-
-
 @router.callback_query(F.data.startswith("card_carousel:"))
 async def choosing_set(callback: CallbackQuery, state: FSMContext):
     index = int(callback.data.split(":")[1])
-
     data = await state.get_data()
     cards = data["cards"]
     await show_card(callback.message, index, cards)
@@ -79,7 +76,10 @@ async def add_card(callback: CallbackQuery, state: FSMContext):
     )
     await state.set_state(CardState.enter_question)
 
-@router.callback_query(F.data.startswith("card_delete:"),StateFilter(CardState.view_card))
+
+@router.callback_query(
+    F.data.startswith("card_delete:"), StateFilter(CardState.view_card)
+)
 async def delete_card(callback: CallbackQuery, state: FSMContext):
     index = int(callback.data.split(":")[1])
     data = await state.get_data()
@@ -90,8 +90,7 @@ async def delete_card(callback: CallbackQuery, state: FSMContext):
     if len(cards) == 0:
         await show_card(msg=callback.message, index=None, cards=None)
     elif index == len(cards):
-        await show_card(msg=callback.message, index=index-1, cards=cards)
+        await show_card(msg=callback.message, index=index - 1, cards=cards)
     else:
         await show_card(msg=callback.message, index=index, cards=cards)
-    await callback.answer(text='Карточка удалена', show_alert=True)
-    
+    await callback.answer(text="Карточка удалена", show_alert=True)

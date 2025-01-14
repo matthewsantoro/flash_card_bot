@@ -45,3 +45,11 @@ async def create_empty_card_keyboard() -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="🔙", callback_data=f"card_back"),
     )
     return builder.as_markup()
+
+async def create_edit_card_keyboard(card_id) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(text="FRONT", callback_data=f"edit_front:{card_id}"),
+        InlineKeyboardButton(text="BACK", callback_data=f"edit_back:{card_id}"),
+    )
+    return builder.as_markup()

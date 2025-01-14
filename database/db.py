@@ -1,6 +1,6 @@
 import logging
 from os import getenv
-from sqlalchemy import delete, func, select, text
+from sqlalchemy import Update, delete, func, select, text
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from models.models import Card, Base, User, Set
@@ -97,7 +97,23 @@ class Database:
         async with self.Session() as session:
             result = await session.execute(select(Card).where(Card.set_id == set_id))
             return result.scalars().all()
+        
+    async def edit_front_card_by_card_id(self, card_id: int, front: str):
+        async with self.Session() as session:
+            await session.execute(Update(Card).where(Card.id == card_id).values(question=front))
+            await session.commit()
 
+            result = await session.execute(select(Card).where(Card.id == card_id))
+            return result.scalar_one_or_none()
+
+    async def edit_front_card_by_card_id(self, card_id: int, front: str):
+        async with self.Session() as session:
+            await session.execute(Update(Card).where(Card.id == card_id).values(question=front))
+            await session.commit()
+
+            result = await session.execute(select(Card).where(Card.id == card_id))
+            return result.scalar_one_or_none()
+        
     # USER
     async def add_user(self, user_id: int, name: str) -> User:
         async with self.Session() as session:
@@ -128,3 +144,5 @@ class Database:
             await session.commit()
             await session.refresh(new_set)
             return new_set
+    
+  

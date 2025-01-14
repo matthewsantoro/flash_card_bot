@@ -8,3 +8,5 @@ class CardState(StatesGroup):
     finish = State()
     view_card = State()
     menu_card = State()
+    edit_front = State()
+    edit_back = State()
