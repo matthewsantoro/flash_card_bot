@@ -40,12 +40,11 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
         set_id=data["set_id"],
         number=data["number"],
     )
-    cards = data.get('cards')
+    cards = data.get("cards")
     if cards is None:
         cards = []
     cards.append(card)
-    
-    
+
     await state.update_data(cards=cards)
     keyboard = await finish_card()
     await bot.edit_message_text(
@@ -73,4 +72,4 @@ async def finish(callback: CallbackQuery, state: FSMContext):
     if option == "finish":
         await state.set_state(CardState.view_card)
         cards = data["cards"]
-        await show_card(msg=callback.message, index=len(cards) - 1, cards=cards)
+        await show_card(msg=callback.message, index=len(cards) - 1, cards=cards, state=state)

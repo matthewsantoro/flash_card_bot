@@ -21,6 +21,6 @@ async def adding_collection(message: Message, state: FSMContext, bot: Bot):
     await state.set_state(CardState.view_card)
     clb = data["msg_callback"]
     await message.delete()
-    await show_card(msg=clb.message, index=None, cards=None)
+    await show_card(msg=clb.message, index=None, cards=None,state=state)
     
     

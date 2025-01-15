@@ -30,13 +30,14 @@ async def checking_chosen_set(callback: CallbackQuery, state: FSMContext):
         await state.update_data(set_id=set_id)
         cards = await db.get_cards_by_set_id(set_id)
         await state.update_data(cards=cards)
-        await show_card(callback.message, 0, cards)
+        await show_card(callback.message, 0, cards, state=state)
         await state.set_state(CardState.view_card)
 
 
-async def show_card(msg: Message, index: Optional[int], cards: Optional[list[Card]]):
+async def show_card(msg: Message, index: Optional[int], cards: Optional[list[Card]], state: FSMContext):
     if cards:
         card = cards[index]
+        await state.update_data(card=card)
         keyboard = await create_card_keyboard(index=index, total=len(cards))
         await msg.edit_text(
             text=f"<b>📝Карточка #{card.number}</b>\n<b>👆FRONT: </b>{card.question}\n<b>👇BACK </b>:{card.answer}",
@@ -48,6 +49,7 @@ async def show_card(msg: Message, index: Optional[int], cards: Optional[list[Car
             text=EMPTY_CARD_IN_SET,
             reply_markup=keyboard,
         )
+    
 
 
 @router.callback_query(F.data.startswith("card_carousel:"))
@@ -55,7 +57,7 @@ async def choosing_set(callback: CallbackQuery, state: FSMContext):
     index = int(callback.data.split(":")[1])
     data = await state.get_data()
     cards = data["cards"]
-    await show_card(callback.message, index, cards)
+    await show_card(callback.message, index, cards=cards,state=state)
 
 
 @router.callback_query(F.data == "card_back", StateFilter(CardState.view_card))
@@ -88,9 +90,9 @@ async def delete_card(callback: CallbackQuery, state: FSMContext):
     await db.delete_card(card_id=card.id)
     await state.update_data(cards=cards)
     if len(cards) == 0:
-        await show_card(msg=callback.message, index=None, cards=None)
+        await show_card(msg=callback.message, index=None, cards=None,state=state),
     elif index == len(cards):
-        await show_card(msg=callback.message, index=index - 1, cards=cards)
+        await show_card(msg=callback.message, index=index - 1, cards=cards,state=state)
     else:
-        await show_card(msg=callback.message, index=index, cards=cards)
+        await show_card(msg=callback.message, index=index, cards=cards,state=state)
     await callback.answer(text="Карточка удалена", show_alert=True)

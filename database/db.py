@@ -114,6 +114,13 @@ class Database:
             result = await session.execute(select(Card).where(Card.id == card_id))
             return result.scalar_one_or_none()
         
+    async def update_card(self, card: Card):
+        async with self.Session() as session:
+            await session.merge(card)
+            await session.commit()
+            
+
+        
     # USER
     async def add_user(self, user_id: int, name: str) -> User:
         async with self.Session() as session:
