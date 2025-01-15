@@ -95,7 +95,7 @@ class Database:
 
     async def get_cards_by_set_id(self, set_id: int):
         async with self.Session() as session:
-            result = await session.execute(select(Card).where(Card.set_id == set_id))
+            result = await session.execute(select(Card).where(Card.set_id == set_id).order_by(Card.number))
             return result.scalars().all()
         
     async def edit_front_card_by_card_id(self, card_id: int, front: str):
