@@ -20,12 +20,13 @@ db = Database()
 async def entering_question(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(q=message.text)
     data = await state.get_data()
+    callback = data['msg_callback']
     await message.delete()
 
     await bot.edit_message_text(
         text=f"<b>📝Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{message.text}\n\nНапишите BACK карточки",
         chat_id=message.chat.id,
-        message_id=data["msg_id"],
+        message_id=callback.message.message_id
     )
     await state.set_state(CardState.enter_answer)
 
@@ -34,6 +35,7 @@ async def entering_question(message: Message, state: FSMContext, bot: Bot):
 async def entering_answer(message: Message, state: FSMContext, bot: Bot):
     await state.update_data(a=message.text)
     data = await state.get_data()
+    callback = data['msg_callback']
     card = await db.add_card(
         answer=data["a"],
         question=data["q"],
@@ -50,7 +52,7 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
     await bot.edit_message_text(
         f"<b>📝Карточка #{data['number']}</b>\n<b>👆FRONT: </b>{card.question}\n<b>👇BACK </b>:{card.answer}",
         chat_id=message.chat.id,
-        message_id=data["msg_id"],
+        message_id=callback.message.message_id,
         reply_markup=keyboard,
     )
     await message.delete()
@@ -61,9 +63,9 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
 async def finish(callback: CallbackQuery, state: FSMContext):
     option = callback.data.split("_")[1]
     data = await state.get_data()
-    number = data["number"] + 1
-    await state.update_data(number=number)
     if option == "new":
+        number = data["number"] + 1
+        await state.update_data(number=number)
         await state.set_state(CardState.enter_question)
         await callback.message.edit_text(
             text=f"<b>📝Карточка #{number}</b>\nНапишите Front карточки",
