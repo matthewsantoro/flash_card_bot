@@ -10,3 +10,7 @@ class CardState(StatesGroup):
     menu_card = State()
     edit_front = State()
     edit_back = State()
+    edit_set = State()
+    edit_name_set = State()
+    
+    

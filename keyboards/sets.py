@@ -30,3 +30,10 @@ async def create_card_keyboard(index: int, total: int):
     builder.button(text="✏️ Редактировать", callback_data=f"cardedit_{index}")
     builder.button(text="🗑️ Удалить", callback_data=f"carddelete_{index}")
     return builder.as_markup()
+
+async def create_set_setting():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="✏️ Редактировать название", callback_data=f"collection_edit")
+    builder.add(InlineKeyboardButton(text="🗑️ Удалить", callback_data=f"collection_delete"))
+    builder.add(InlineKeyboardButton(text="🔙Назад", callback_data=f"collection_back"))
+    return builder.as_markup()

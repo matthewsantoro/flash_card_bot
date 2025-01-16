@@ -151,5 +151,15 @@ class Database:
             await session.commit()
             await session.refresh(new_set)
             return new_set
+        
+    async def edit_set_name(self, set_id: int, name: str):
+        async with self.Session() as session:
+            await session.execute(Update(Set).where(Set.id == set_id).values(name=name))
+            await session.commit()
     
-  
+    async def delete_set_by_id(self, set_id: int):
+        async with self.Session() as session:
+            await session.execute(delete(Card).where(Card.set_id== set_id))
+            await session.execute(delete(Set).where(Set.id == set_id))
+            await session.commit()
+    
