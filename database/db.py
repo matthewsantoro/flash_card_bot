@@ -3,7 +3,7 @@ from os import getenv
 from sqlalchemy import Update, delete, func, select, text
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from models.models import Card, Base, User, Set
+from models.models import Card, Base, User , Deck
 
 
 class Database:
@@ -36,9 +36,9 @@ class Database:
                 UPDATE cards
                 SET number = new_numbers.new_number
                 FROM (
-                    SELECT id, ROW_NUMBER() OVER (PARTITION BY set_id ORDER BY id) AS new_number
+                    SELECT id, ROW_NUMBER() OVER (PARTITION BY deck_id ORDER BY id) AS new_number
                     FROM cards
-                    WHERE set_id = OLD.set_id
+                    WHERE deck_id = OLD.deck_id
                 ) AS new_numbers
                 WHERE cards.id = new_numbers.id;
 
@@ -70,21 +70,21 @@ class Database:
             logging.info("Таблицы успешно созданы или уже существуют.")
 
     # CARDS
-    async def add_card(self, question: str, answer: str, set_id: int, number: int):
+    async def add_card(self, question: str, answer: str, deck_id: int, number: int):
         async with self.Session() as session:
 
             new_card = Card(
-                question=question, answer=answer, set_id=set_id, number=number
+                question=question, answer=answer, deck_id=deck_id, number=number
             )
             session.add(new_card)
             await session.commit()
             await session.refresh(new_card)
             return new_card
 
-    async def get_last_card_number_in_set(self, set_id: int):
+    async def get_last_card_number_in_deck(self, deck_id: int):
         async with self.Session() as session:
             result = await session.execute(
-                select(func.count()).select_from(Card).where(Card.set_id == set_id)
+                select(func.count()).select_from(Card).where(Card.deck_id == deck_id)
             )
             return result.scalar()
 
@@ -93,9 +93,9 @@ class Database:
             await session.execute(delete(Card).where(Card.id == card_id))
             await session.commit()
 
-    async def get_cards_by_set_id(self, set_id: int):
+    async def get_cards_by_deck_id(self, deck_id: int):
         async with self.Session() as session:
-            result = await session.execute(select(Card).where(Card.set_id == set_id).order_by(Card.number))
+            result = await session.execute(select(Card).where(Card.deck_id == deck_id).order_by(Card.number))
             return result.scalars().all()
         
     async def edit_front_card_by_card_id(self, card_id: int, front: str):
@@ -134,32 +134,32 @@ class Database:
             return result.scalars().first()
 
     # SETS
-    async def get_sets_by_user_id(self, user_id: int) -> list[Set]:
+    async def get_decks_by_user_id(self, user_id: int) -> list[Deck]:
         async with self.Session() as session:
-            result = await session.execute(select(Set).where(Set.creator_id == user_id))
+            result = await session.execute(select(Deck).where(Deck.creator_id == user_id))
             return result.scalars().all()
 
-    async def get_set_by_id(self, set_id: int) -> list[Set]:
+    async def get_deck_by_id(self, deck_id: int) -> list[Deck]:
         async with self.Session() as session:
-            result = await session.execute(select(Set).where(Set.id == set_id))
+            result = await session.execute(select(Deck).where(Deck.id == deck_id))
             return result.scalars().firt()
 
-    async def add_set(self, name: str, creator_id: int, private: bool = True) -> Set:
+    async def add_deck(self, name: str, creator_id: int, private: bool = True) -> Deck:
         async with self.Session() as session:
-            new_set = Set(name=name, creator_id=creator_id, private=private)
-            session.add(new_set)
+            new_deck = Deck(name=name, creator_id=creator_id, private=private)
+            session.add(new_deck)
             await session.commit()
-            await session.refresh(new_set)
-            return new_set
+            await session.refresh(new_deck)
+            return new_deck
         
-    async def edit_set_name(self, set_id: int, name: str):
+    async def edit_de_name(self, deck_id: int, name: str):
         async with self.Session() as session:
-            await session.execute(Update(Set).where(Set.id == set_id).values(name=name))
+            await session.execute(Update(Deck).where(Deck.id == deck_id).values(name=name))
             await session.commit()
     
-    async def delete_set_by_id(self, set_id: int):
+    async def delete_deck_by_id(self, deck_id: int):
         async with self.Session() as session:
-            await session.execute(delete(Card).where(Card.set_id== set_id))
-            await session.execute(delete(Set).where(Set.id == set_id))
+            await session.execute(delete(Card).where(Card.deck_id== deck_id))
+            await session.execute(delete(Deck).where(Deck.id == deck_id))
             await session.commit()
     

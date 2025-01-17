@@ -2,7 +2,7 @@
 #     'Base',
 #     'Category',
 #     'Card',
-#     'Set',
+#     'Deck',
 #     'User'
 # )
 

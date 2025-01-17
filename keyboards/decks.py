@@ -2,24 +2,24 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
-async def create_sets_keyboard(sets) -> InlineKeyboardMarkup:
+async def create_decks_keyboard(decks) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    for set_item in sets:
+    for deck_item in decks:
         builder.add(InlineKeyboardButton(
-            text=f"{set_item.name}",
-            callback_data=f"set_{set_item.id}")
+            text=f"{deck_item.name}",
+            callback_data=f"deck_{deck_item.id}")
         )
     builder.add(InlineKeyboardButton(
         text=f"Добавить набор",
-        callback_data="set_0"))
+        callback_data="deck_0"))
     builder.adjust(1) 
     return builder.as_markup()
 
-async def create_set_menu() -> InlineKeyboardMarkup:
+async def create_deck_menu() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.add(InlineKeyboardButton(text='Карточки', callback_data='view_cards'))
-    builder.add(InlineKeyboardButton(text='Редактировать', callback_data='edit_set'))
-    builder.add(InlineKeyboardButton(text='Удалить', callback_data='delete_set'))
+    builder.add(InlineKeyboardButton(text='Редактировать', callback_data='edit_deck'))
+    builder.add(InlineKeyboardButton(text='Удалить', callback_data='delete_deck'))
 
 async def create_card_keyboard(index: int, total: int):
     builder = InlineKeyboardBuilder()
@@ -31,7 +31,7 @@ async def create_card_keyboard(index: int, total: int):
     builder.button(text="🗑️ Удалить", callback_data=f"carddelete_{index}")
     return builder.as_markup()
 
-async def create_set_setting():
+async def create_deck_setting():
     builder = InlineKeyboardBuilder()
     builder.button(text="✏️ Редактировать название", callback_data=f"collection_edit")
     builder.add(InlineKeyboardButton(text="🗑️ Удалить", callback_data=f"collection_delete"))

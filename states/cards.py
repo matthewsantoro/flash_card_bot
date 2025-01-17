@@ -1,8 +1,8 @@
 from aiogram.fsm.state import State, StatesGroup
 
 class CardState(StatesGroup):
-    choose_set = State()
-    add_set = State()
+    choose_deck = State()
+    add_deck = State()
     enter_question = State()
     enter_answer = State()
     finish = State()
@@ -10,7 +10,7 @@ class CardState(StatesGroup):
     menu_card = State()
     edit_front = State()
     edit_back = State()
-    edit_set = State()
-    edit_name_set = State()
+    edit_deck = State()
+    edit_name_deck = State()
     
     

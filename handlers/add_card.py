@@ -2,12 +2,12 @@ from aiogram import Bot, Router, F
 from aiogram.types import Message, CallbackQuery
 from database.db import Database
 from handlers import main_menu
-from handlers.cards import checking_chosen_set, show_card
+from handlers.cards import checking_chosen_deck, show_card
 from keyboards.menu import create_main_menu
 from states.cards import CardState
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
-from keyboards.sets import create_sets_keyboard
+from keyboards.decks import create_decks_keyboard
 from keyboards.cards import finish_card
 from utils.text import MAIN_MENU_TEXT
 
@@ -39,7 +39,7 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
     card = await db.add_card(
         answer=data["a"],
         question=data["q"],
-        set_id=data["set_id"],
+        deck_id=data["deck_id"],
         number=data["number"],
     )
     cards = data.get("cards")

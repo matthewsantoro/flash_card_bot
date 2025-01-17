@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher, html
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 
-from handlers import start, add_card, main_menu, set, cards, edit_card
+from handlers import deck, start, add_card, main_menu, cards, edit_card
 
 from config import BOT_TOKEN
 from database.db import Database
@@ -21,7 +21,7 @@ async def main() -> None:
     await db.setup()
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp.include_routers(
-        start.router, main_menu.router, add_card.router, set.router, cards.router, edit_card.router
+        start.router, main_menu.router, add_card.router, deck.router, cards.router, edit_card.router
     )
     await dp.start_polling(bot)
 

@@ -31,11 +31,11 @@ async def create_card_keyboard(index: int, total: int) -> InlineKeyboardMarkup:
         )
        
     builder.row(
-        InlineKeyboardButton(text="✍️Изменить карточку", callback_data=f"card_edit:{index}"),
-        InlineKeyboardButton(text="➕Добавить карточку", callback_data=f"card_add"),
-        InlineKeyboardButton(text="🗑️Удалить карточку", callback_data=f"card_delete:{index}"),
-        
-    )
+        InlineKeyboardButton(text="✍️Изменить карточку", callback_data=f"card_edit:{index}"))
+    builder.row(InlineKeyboardButton(text="➕Добавить карточку", callback_data=f"card_add"))
+    builder.row(InlineKeyboardButton(text="🗑️Удалить карточку", callback_data=f"card_delete:{index}"))
+    builder.row(InlineKeyboardButton(text="🧠Учить", callback_data=f"collection_learn"))
+
     builder.row(
         InlineKeyboardButton(text="🗂️⚙️Настройки коллекции", callback_data=f"collection_setting"),
         InlineKeyboardButton(text="🔙Назад", callback_data=f"card_back")
