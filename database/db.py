@@ -133,7 +133,7 @@ class Database:
             result = await session.execute(select(User).where(User.id == user_id))
             return result.scalars().first()
 
-    # SETS
+    # DECK
     async def get_decks_by_user_id(self, user_id: int) -> list[Deck]:
         async with self.Session() as session:
             result = await session.execute(select(Deck).where(Deck.creator_id == user_id))
@@ -152,7 +152,7 @@ class Database:
             await session.refresh(new_deck)
             return new_deck
         
-    async def edit_de_name(self, deck_id: int, name: str):
+    async def edit_deck_name(self, deck_id: int, name: str):
         async with self.Session() as session:
             await session.execute(Update(Deck).where(Deck.id == deck_id).values(name=name))
             await session.commit()

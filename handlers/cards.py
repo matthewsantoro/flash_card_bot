@@ -10,7 +10,7 @@ from aiogram.fsm.context import FSMContext
 from keyboards.cards import create_card_keyboard, create_empty_card_keyboard
 from aiogram.fsm.context import FSMContext
 
-from utils.text import EMPTY_CARD_IN_DECK, MAIN_MENU_TEXT
+from utils.text import EMPTY_CARD_IN_DECK, ENTER_DECK_NAME, MAIN_MENU_TEXT
 
 router = Router()
 
@@ -22,7 +22,7 @@ async def checking_chosen_deck(callback: CallbackQuery, state: FSMContext):
     deck_id = int(callback.data.split("_")[1])
     if deck_id == 0:
         await callback.message.edit_text(
-            text="Введите название колекции:", reply_markup=None
+            text=ENTER_DECK_NAME, reply_markup=None
         )
         await state.set_state(CardState.add_deck)
         await state.update_data(number=1)

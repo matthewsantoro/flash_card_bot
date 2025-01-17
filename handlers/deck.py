@@ -20,7 +20,7 @@ async def adding_collection(message: Message, state: FSMContext):
     data = await state.get_data()
     deck = await db.add_deck(name=message.text, creator_id=user_id)
     await state.update_data(deck_id=deck.id)
-    await state.deck_state(CardState.view_card)
+    await state.set_state(CardState.view_card)
     clb = data["msg_callback"]
     await message.delete()
     await show_card(msg=clb.message, index=None, cards=None, state=state)
@@ -51,7 +51,7 @@ async def edited_name_collection(message: Message, state: FSMContext):
     await callback.answer(text="Карточка изменена", show_alert=True)
 
 @router.callback_query(F.data == "collection_delete")
-async def editing_name_collection(callback: CallbackQuery, state: FSMContext):
+async def deleting_name_collection(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     deck_id = data['deck_id']
     await db.delete_deck_by_id(deck_id=deck_id)
