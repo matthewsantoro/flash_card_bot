@@ -19,7 +19,7 @@ async def choosing_edit(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     cards = data["cards"]
     card = cards[index]
-    text = f"<b>📝Карточка #{card.number} </b>\n<b>👆FRONT: </b>{card.question}\n<b>👇BACK </b>:{card.answer}\n\nВыберете, что именно вы хотите изменить"
+    text = f"<b>📝Карточка #{card.number} </b>\n<b>👆FRONT:\n</b>{card.question}\n<b>👇BACK \n<</b>:{card.answer}\n\nВыберете, что именно вы хотите изменить"
     keyboard = await create_edit_card_keyboard(card_id=card.id)
     await callback.message.edit_text(text=text, reply_markup=keyboard)
 
@@ -29,13 +29,13 @@ async def editing_card(callback: CallbackQuery, state: FSMContext):
     card_id = int(callback.data.split(":")[1])
     state.update_data(edit_card_id=card_id)
     if 'front' in callback.data:
-        text='Введите передню часть карточки'
+        text='Введите переднюю часть карточки'
         await callback.message.edit_text(text=text)
         await state.set_state(CardState.edit_front)
     else:
         text = 'Введите заднюю часть карточки'
         await state.set_state(CardState.edit_back)
-        await callback.message.edit_text(text='Введите передню часть карточки')
+        await callback.message.edit_text(text=text)
 
 @router.message(StateFilter(CardState.edit_front))
 async def front_edit(message: Message, state: FSMContext):
@@ -64,6 +64,8 @@ async def back_edit(message: Message, state: FSMContext):
     await state.set_state(CardState.view_card)
     await message.delete()
     await show_card(msg=clb.message, index = index, cards=cards,state=state)
+
+
 
     
 

@@ -27,8 +27,9 @@ async def checking_chosen_deck(callback: CallbackQuery, state: FSMContext):
         await state.set_state(CardState.add_deck)
         await state.update_data(number=1)
     else:
-        await state.update_data(deck_id=deck_id)
-        cards = await db.get_cards_by_deck_id(deck_id)
+        deck = await db.get_deck_by_id(deck_id=deck_id)
+        cards = await db.get_cards_by_deck_id(deck.id)
+        await state.update_data(deck=deck)
         await state.update_data(cards=cards)
         await show_card(callback.message, 0, cards, state=state)
         await state.set_state(CardState.view_card)
@@ -40,7 +41,7 @@ async def show_card(msg: Message, index: Optional[int], cards: Optional[list[Car
         await state.update_data(card=card)
         keyboard = await create_card_keyboard(index=index, total=len(cards))
         await msg.edit_text(
-            text=f"<b>📝Карточка #{card.number}</b>\n<b>👆FRONT: </b>{card.question}\n<b>👇BACK </b>:{card.answer}",
+            text=f"<b>📝Карточка #{card.number}</b>\n<b>👆FRONT:\n</b>{card.question}\n<b>👇BACK \n<</b>:{card.answer}",
             reply_markup=keyboard,
         )
     else:
@@ -70,7 +71,7 @@ async def back_to_menu(callback: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "card_add", StateFilter(CardState.view_card))
 async def add_card(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    number = await db.get_last_card_number_in_deck(deck_id=data["deck_id"]) + 1
+    number = await db.get_last_card_number_in_deck(deck_id=data["deck"].id) + 1
     await state.update_data(number=number)
     await callback.message.edit_text(
         text=f"<b>📝Карточка #{number}</b>\nНапишите Front карточки",

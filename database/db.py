@@ -3,7 +3,7 @@ from os import getenv
 from sqlalchemy import Update, delete, func, select, text
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from models.models import Card, Base, User , Deck
+from models.models import Card, Base, User, Deck
 
 
 class Database:
@@ -95,12 +95,16 @@ class Database:
 
     async def get_cards_by_deck_id(self, deck_id: int):
         async with self.Session() as session:
-            result = await session.execute(select(Card).where(Card.deck_id == deck_id).order_by(Card.number))
+            result = await session.execute(
+                select(Card).where(Card.deck_id == deck_id).order_by(Card.number)
+            )
             return result.scalars().all()
-        
+
     async def edit_front_card_by_card_id(self, card_id: int, front: str):
         async with self.Session() as session:
-            await session.execute(Update(Card).where(Card.id == card_id).values(question=front))
+            await session.execute(
+                Update(Card).where(Card.id == card_id).values(question=front)
+            )
             await session.commit()
 
             result = await session.execute(select(Card).where(Card.id == card_id))
@@ -108,19 +112,19 @@ class Database:
 
     async def edit_front_card_by_card_id(self, card_id: int, front: str):
         async with self.Session() as session:
-            await session.execute(Update(Card).where(Card.id == card_id).values(question=front))
+            await session.execute(
+                Update(Card).where(Card.id == card_id).values(question=front)
+            )
             await session.commit()
 
             result = await session.execute(select(Card).where(Card.id == card_id))
             return result.scalar_one_or_none()
-        
+
     async def update_card(self, card: Card):
         async with self.Session() as session:
             await session.merge(card)
             await session.commit()
-            
 
-        
     # USER
     async def add_user(self, user_id: int, name: str) -> User:
         async with self.Session() as session:
@@ -136,7 +140,9 @@ class Database:
     # DECK
     async def get_decks_by_user_id(self, user_id: int) -> list[Deck]:
         async with self.Session() as session:
-            result = await session.execute(select(Deck).where(Deck.creator_id == user_id))
+            result = await session.execute(
+                select(Deck).where(Deck.creator_id == user_id)
+            )
             return result.scalars().all()
 
     async def get_deck_by_id(self, deck_id: int) -> list[Deck]:
@@ -151,15 +157,23 @@ class Database:
             await session.commit()
             await session.refresh(new_deck)
             return new_deck
-        
+
     async def edit_deck_name(self, deck_id: int, name: str):
         async with self.Session() as session:
-            await session.execute(Update(Deck).where(Deck.id == deck_id).values(name=name))
+            await session.execute(
+                Update(Deck).where(Deck.id == deck_id).values(name=name)
+            )
             await session.commit()
-    
+
     async def delete_deck_by_id(self, deck_id: int):
         async with self.Session() as session:
-            await session.execute(delete(Card).where(Card.deck_id== deck_id))
+            await session.execute(delete(Card).where(Card.deck_id == deck_id))
             await session.execute(delete(Deck).where(Deck.id == deck_id))
             await session.commit()
-    
+
+    async def update_deck(self, deck: Deck):
+        async with self.Session() as session:
+            await session.merge(deck)
+            await session.commit()
+
+   
