@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey,DateTime, func,BOOLEAN
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey,DateTime, func,BOOLEAN
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
 
 
@@ -6,12 +6,7 @@ class Base(DeclarativeBase):
     created: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
     updated: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
     
-# class Category(Base):
-#     __tablename__ = 'categories'  
-#     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-#     name: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
 
-#     cards: Mapped[list["Card"]] = relationship("Card", back_populates="category")
 
 class Card(Base):
     __tablename__ = 'cards'  
@@ -19,11 +14,12 @@ class Card(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     question: Mapped[str] = mapped_column(String(1000), nullable=False)
     answer: Mapped[str] = mapped_column(String(1000), nullable=False)
-   
-    deck_id: Mapped[int] = mapped_column(ForeignKey('decks.id')) 
     number: Mapped[int] = mapped_column(Integer, nullable=True)
+    deck_id: Mapped[int] = mapped_column(ForeignKey('decks.id')) 
+    Level_id: Mapped[int] = mapped_column(ForeignKey('levels.level_id'))
 
     deck: Mapped["Deck"] = relationship("Deck", back_populates="card")
+    level: Mapped["Level"] = relationship("Level", back_populates='card')
 
 class Deck(Base):
     __tablename__ = 'decks' 
@@ -43,3 +39,31 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(150), unique=False, nullable=False)
 
     deck: Mapped["Deck"] = relationship("Deck", back_populates="creator")
+
+class Transitions(Base):
+    __tablename__ = 'transitions'
+    
+    transition_id = Column(Integer, primary_key=True, autoincrement=True)
+    current_level_id = Column(Integer, ForeignKey('levels.level_id'), nullable=False)
+    action_successful = Column(Boolean, nullable=False)
+    next_level_id = Column(Integer, ForeignKey('levels.level_id'), nullable=False)
+
+    # Определение отношений (если нужно)
+    current_level = relationship("Levels", foreign_keys=[current_level_id], back_populates="current_transitions")
+    next_level = relationship("Levels", foreign_keys=[next_level_id], back_populates="next_transitions")
+
+
+class Level(Base):
+    __tablename__ = 'levels'  
+    level_id: Mapped[int] = mapped_column(Integer, primary_key=True, nullable=False )
+    interval_days: Mapped[int] = mapped_column(Integer, nullable=False)
+     
+    card: Mapped[list["Card"]] = relationship("Card", back_populates="level")
+    current_transitions = relationship("Transitions", foreign_keys=[Transitions.current_level_id], back_populates="current_level")
+    next_transitions = relationship("Transitions", foreign_keys=[Transitions.next_level_id], back_populates="next_level")
+
+
+
+
+
+
