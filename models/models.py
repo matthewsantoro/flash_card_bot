@@ -5,6 +5,7 @@ from sqlalchemy import (
     String,
     ForeignKey,
     DateTime,
+    Text,
     func,
     BOOLEAN,
 )
@@ -22,8 +23,8 @@ class Card(Base):
     __tablename__ = "cards"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    question: Mapped[str] = mapped_column(String(1000), nullable=False)
-    answer: Mapped[str] = mapped_column(String(1000), nullable=False)
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    answer: Mapped[str] = mapped_column(Text, nullable=False)
     number: Mapped[int] = mapped_column(Integer, nullable=True)
     deck_id: Mapped[int] = mapped_column(ForeignKey("decks.id"))
     Level_id: Mapped[int] = mapped_column(ForeignKey("levels.level_id"), default=1)
