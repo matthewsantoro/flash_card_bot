@@ -34,8 +34,8 @@ async def entering_answer(message: Message, state: FSMContext, bot: Bot):
     data = await state.get_data()
     callback = data["msg_callback"]
     card = await db.add_card(
-        answer=data["a"],
-        question=data["q"],
+        answer=data["a"].replace('<', '&lt;').replace('>', '&gt;'),
+        question=data["q"].replace('<', '&lt;').replace('>', '&gt;'),
         deck_id=data["deck"].id,
         number=data["number"],
     )
