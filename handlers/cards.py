@@ -41,7 +41,7 @@ async def show_card(msg: Message, index: Optional[int], cards: Optional[list[Car
         await state.update_data(card=card)
         keyboard = await create_card_keyboard(index=index, total=len(cards))
         await msg.edit_text(
-            text=f"<b>📝Карточка #{card.number}</b>\n<b>👆FRONT:\n</b>{card.question}\n<b>👇BACK \n<</b>:{card.answer}",
+            text=f"<b>📝Карточка #{card.number}</b>\n<b>👆FRONT:\n</b>{card.question}\n<b>👇BACK \n</b>:{card.answer}",
             reply_markup=keyboard,
         )
     else:
