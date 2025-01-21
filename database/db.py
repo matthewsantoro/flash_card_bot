@@ -148,7 +148,7 @@ class Database:
     async def get_deck_by_id(self, deck_id: int) -> list[Deck]:
         async with self.Session() as session:
             result = await session.execute(select(Deck).where(Deck.id == deck_id))
-            return result.scalars().firt()
+            return result.scalars().first()
 
     async def add_deck(self, name: str, creator_id: int, private: bool = True) -> Deck:
         async with self.Session() as session:
