@@ -26,7 +26,7 @@ class Card(Base):
     answer: Mapped[str] = mapped_column(String(1000), nullable=False)
     number: Mapped[int] = mapped_column(Integer, nullable=True)
     deck_id: Mapped[int] = mapped_column(ForeignKey("decks.id"))
-    Level_id: Mapped[int] = mapped_column(ForeignKey("levels.level_id"))
+    Level_id: Mapped[int] = mapped_column(ForeignKey("levels.level_id"), default=1)
 
     deck: Mapped["Deck"] = relationship("Deck", back_populates="card")
     level: Mapped["Level"] = relationship("Level", back_populates="card")
