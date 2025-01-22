@@ -8,7 +8,7 @@ from states.cards import CardState
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from keyboards.cards import create_card_keyboard, create_empty_card_keyboard
-from aiogram.fsm.context import FSMContext
+
 
 from utils.text import EMPTY_CARD_IN_DECK, ENTER_DECK_NAME, MAIN_MENU_TEXT
 
