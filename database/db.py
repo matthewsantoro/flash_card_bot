@@ -1,9 +1,10 @@
+from datetime import datetime, timedelta
 import logging
 from os import getenv
 from sqlalchemy import Update, delete, func, select, text
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from models.models import Card, Base, User, Deck
+from models.models import Card, Base, User, Deck, Transitions, Level
 
 
 class Database:
@@ -125,6 +126,45 @@ class Database:
             await session.merge(card)
             await session.commit()
 
+    async def get_study_cards_by_deck_id(self, deck_id: int):
+        async with self.Session() as session:
+            result = await session.execute(
+                select(Card).where(
+                    (Card.deck_id == deck_id) & (Card.last_reviewed <= func.now())
+                )
+            )
+            return result.scalars().all()
+
+    async def update_level_card(self, action_successful: bool, card_id: int):
+        async with self.Session() as session:
+            card_result = await session.execute(select(Card).where(Card.id == card_id))
+            print("mamba222")
+            card = card_result.scalar_one()
+            print("mamba333")
+            transition_result = await session.execute(
+                select(Transitions).where(
+                    (Transitions.current_level_id == card.Level_id)
+                    & (Transitions.action_successful == action_successful)
+                )
+            )
+            transition = transition_result.scalar_one()
+
+            card.Level_id = transition.next_level_id
+
+            next_level = (
+                await session.execute(
+                    select(Level).where(
+                        (Level.level_id == transition.next_level_id)
+                    )
+                )
+            ).scalar_one()
+
+            card.last_reviewed = datetime.now() + timedelta(
+                days=next_level.interval_days
+            )
+
+            await session.commit()
+
     # USER
     async def add_user(self, user_id: int, name: str) -> User:
         async with self.Session() as session:
@@ -176,4 +216,9 @@ class Database:
             await session.merge(deck)
             await session.commit()
 
-   
+    # TRANSITIONS
+
+    # async def get_transitions_by_current_level_id(self, deck_id: int) -> list[Deck]:
+    #     async with self.Session() as session:
+    #         result = await session.execute(select(Deck).where(Deck.id == deck_id))
+    #         return result.scalars().first()
