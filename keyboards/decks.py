@@ -21,6 +21,8 @@ async def create_deck_menu() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text='Редактировать', callback_data='edit_deck'))
     builder.add(InlineKeyboardButton(text='Удалить', callback_data='delete_deck'))
 
+    return builder.as_markup()
+
 async def create_card_keyboard(index: int, total: int):
     builder = InlineKeyboardBuilder()
     if index > 1:
