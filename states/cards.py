@@ -12,5 +12,6 @@ class CardState(StatesGroup):
     edit_back = State()
     edit_deck = State()
     edit_name_deck = State()
+    training = State()
     
     
