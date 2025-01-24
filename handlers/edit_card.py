@@ -54,8 +54,8 @@ async def front_edit(message: Message, state: FSMContext):
 @router.message(StateFilter(CardState.edit_back))
 async def back_edit(message: Message, state: FSMContext):
     data = await state.get_data()
-    cards = data['cards']
     clb = data["msg_callback"]
+    cards = data['cards']    
     card = data['card']
     index = cards.index(card)
     card.answer = message.text
