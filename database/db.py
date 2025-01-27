@@ -143,13 +143,13 @@ class Database:
             print("mamba333")
             transition_result = await session.execute(
                 select(Transitions).where(
-                    (Transitions.current_level_id == card.Level_id)
+                    (Transitions.current_level_id == card.level_id)
                     & (Transitions.action_successful == action_successful)
                 )
             )
             transition = transition_result.scalar_one()
 
-            card.Level_id = transition.next_level_id
+            card.level_id = transition.next_level_id
 
             next_level = (
                 await session.execute(
@@ -165,6 +165,11 @@ class Database:
 
             await session.commit()
 
+    async def get_next_time_to_learn(self):
+        async with self.Session() as session:
+            time_result = await session.execute(select(func.min(Card.last_reviewed)))
+            
+            return time_result.scalar() 
     # USER
     async def add_user(self, user_id: int, name: str) -> User:
         async with self.Session() as session:
@@ -215,6 +220,13 @@ class Database:
         async with self.Session() as session:
             await session.merge(deck)
             await session.commit()
+
+    #LEVEL
+    async def get_level_by_id(self, level_id: int):
+        async with self.Session() as session:
+            result = await session.execute(select(Level).where(Level.level_id == level_id))
+            return result.scalars().first()
+            
 
     # TRANSITIONS
 
