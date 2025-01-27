@@ -27,7 +27,7 @@ class Card(Base):
     answer: Mapped[str] = mapped_column(Text, nullable=False)
     number: Mapped[int] = mapped_column(Integer, nullable=True)
     deck_id: Mapped[int] = mapped_column(ForeignKey("decks.id"))
-    Level_id: Mapped[int] = mapped_column(ForeignKey("levels.level_id"), default=1)
+    level_id: Mapped[int] = mapped_column(ForeignKey("levels.level_id"), default=1)
     last_reviewed : Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=True)
 
     deck: Mapped["Deck"] = relationship("Deck", back_populates="card")
